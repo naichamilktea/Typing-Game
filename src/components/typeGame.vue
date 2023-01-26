@@ -23,6 +23,8 @@ export default{
             nextid:2,
             gameEnd:false,
             debugMode:false,
+            speed:5,
+            addNum:3,
         }
     },
     created(){
@@ -35,7 +37,7 @@ export default{
         gameStart(){
             let timer=setInterval(() => {
             this.letters.filter(item=>{
-                    item.posup=parseFloat(item.posup)+(item.hit?(-1):(0.1))+'%'
+                    item.posup=parseFloat(item.posup)+(item.hit?(-1*this.speed):(0.1*this.speed))+'%'
                     if (parseFloat(item.posup)>100 && !item.hit && !this.debugMode){
                         clearInterval(timer)
                         clearInterval(addletter)
@@ -45,18 +47,21 @@ export default{
                 
             }, 10);
             let addletter=setInterval(()=>{
-                this.letters.push({
-                    id:this.nextid,
-                    alpha: String.fromCharCode('A'.charCodeAt()+this.getrandom(0,25)),
-                    posleft: this.getrandom(0,90)+'%',
-                    posup: '0%',
-                    hit:false,
-                })
-                this.nextid++
+                for (let i=0;i<this.addNum;++i){
+                        this.letters.push({
+                        id:this.nextid,
+                        alpha: String.fromCharCode('A'.charCodeAt()+this.getrandom(0,25)),
+                        posleft: this.getrandom(0,90)+'%',
+                        posup: '0%',
+                        hit:false,
+                    })
+                    this.nextid++
+                }
+                
             },1000)
             document.onkeydown=(e)=>{
                 //console.log(e.key.toUpperCase())
-                this.letters.some((item)=>{
+                let res=this.letters.some((item)=>{
                     if (e.key.toUpperCase()===item.alpha && !item.hit){
                         //console.log('hit!')
                         item.hit=true
@@ -67,6 +72,9 @@ export default{
                         return true;
                     }
                 })
+                if (!res){
+                    this.score-=3
+                }
             }
         },
         mytest(){
