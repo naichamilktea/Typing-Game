@@ -1,7 +1,7 @@
 <template>
     <p class="description">这是一个打字游戏。</p>
-    <div class="gamebox">
-        <div v-for="(item,id) in letters" :key="id" >
+    <div class="gamebox" v-if="gameIsStart">
+        <div v-for="(item,id) in letters" :key="id">
             <div class="letterbox" :style="{left : item.posleft , top:item.posup}">
                 {{item.alpha}}
             </div>
@@ -9,6 +9,24 @@
         <div class="score">您的分数：{{score}}</div>
         <p class="end" v-if="gameEnd">游戏结束！</p>
         <button @click="mytest" v-if="debugMode"></button>
+    </div>
+    <div class="settings" v-else>
+        <h1>设置界面</h1>
+        
+        <br>
+        字母下落速度：范围 1 ~ 10之间：
+        <br>
+        <input type="text" placeholder="请输入字母下落速度" v-model="speed">
+        <br>
+        每次出现字母个数：范围 1 ~ 10之间：
+        <br>
+        <input type="text" placeholder="请输入字母出现个数" v-model="addNum">
+        <br>
+        每次下落时间间隔：（单位：ms）
+        <br>
+        <input type="text" placeholder="请输入字母出现个数" v-model="addInterval">
+        <br>
+        <button @click="gameStart">开始游戏</button>
     </div>
 </template>
 <script>
@@ -21,20 +39,22 @@ export default{
             letters:[{id:1,alpha:'A',posleft:'50%',posup:'20%',hit:false}],
             score:0,
             nextid:2,
+            gameIsStart:false,
             gameEnd:false,
             debugMode:false,
-            speed:5,
-            addNum:3,
+            speed:2,
+            addNum:2,
+            addInterval:2000,
         }
     },
     created(){
-        this.gameStart()
     },
     methods: {
         getrandom(min,max){
             return Math.floor(Math.random()*(max-min+1)+min)
         },
         gameStart(){
+            this.gameIsStart=true
             let timer=setInterval(() => {
             this.letters.filter(item=>{
                     item.posup=parseFloat(item.posup)+(item.hit?(-1*this.speed):(0.1*this.speed))+'%'
@@ -58,7 +78,7 @@ export default{
                     this.nextid++
                 }
                 
-            },1000)
+            },this.addInterval)
             document.onkeydown=(e)=>{
                 //console.log(e.key.toUpperCase())
                 let res=this.letters.some((item)=>{
@@ -90,7 +110,7 @@ export default{
     width: 80%;
     height: 800px;
     background-color: black;
-    margin:0px auto;
+    margin:30px auto;
     position: relative;
     overflow:hidden;
 }
@@ -137,5 +157,45 @@ export default{
     margin:0px;
     line-height: 800px;
 }
-
+.settings{
+    width: 80%;
+    height: 800px;
+    background-color: black;
+    margin:0px auto;
+    position: relative;
+    text-align:center;
+    font-size: 20px;
+    font-family: '宋体';
+    color:white;
+}
+.settings h1{
+    font-size: 50px;
+    font-family: '宋体';
+    font-weight:700;
+    color:red;
+}
+.settings input{
+    width: 50%;
+    height: 30px;
+    margin:20px auto;
+    font-size: 20px;
+}
+.settings button{
+    width:50%;
+    border-radius: 3px;
+    height:50px;
+    background-color: orange;
+    color:white;
+    margin: 100px auto;
+    cursor:pointer;
+    font-size:30px;
+    font-family: '宋体';
+    font-weight:700;
+}
+.settings button:hover{
+    background-color: green;
+    color:blue;
+    transition: all .5s;
+    scale:1.2;
+}
 </style>
